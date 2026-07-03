@@ -1,0 +1,8 @@
+#!/bin/bash
+DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+osascript <<APPLESCRIPT
+tell application "Terminal"
+  activate
+  do script "cd '$DIR' && bash start.sh"
+end tell
+APPLESCRIPT
