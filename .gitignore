@@ -1,0 +1,38 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/.turbo/
+
+# Python / uv
+pocket-tts/.venv/
+pocket-tts/__pycache__/
+pocket-tts/**/__pycache__/
+pocket-tts/**/*.pyc
+pocket-tts/**/*.pyo
+pocket-tts/.pytest_cache/
+pocket-tts/*.egg-info/
+pocket-tts/dist/
+pocket-tts/build/
+
+# Environment
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Misc
+*.log

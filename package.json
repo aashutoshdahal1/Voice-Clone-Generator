@@ -1,0 +1,14 @@
+{
+  "name": "pocket-tts-studio",
+  "version": "1.0.0",
+  "description": "Professional text-to-speech with voice cloning — powered by Kyutai",
+  "private": true,
+  "scripts": {
+    "dev": "node start-all.js",
+    "start": "node start-all.js",
+    "install:all": "cd frontend && npm install"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
