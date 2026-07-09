@@ -1,6 +1,28 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
 const BACKEND = process.env.BACKEND_URL ?? 'http://localhost:8000'
+const MAX_RETRIES = 3
+const RETRY_DELAY_MS = 2000
+
+async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
+  let lastError: unknown
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      return await fetch(url, init)
+    } catch (err) {
+      lastError = err
+      // Only retry on connection errors (ECONNREFUSED etc.), not on HTTP errors
+      const isConnectionError =
+        err instanceof TypeError &&
+        (err.message.includes('ECONNREFUSED') ||
+          err.message.includes('fetch failed') ||
+          err.message.includes('connect'))
+      if (!isConnectionError || attempt === MAX_RETRIES - 1) throw err
+      await new Promise((r) => setTimeout(r, RETRY_DELAY_MS))
+    }
+  }
+  throw lastError
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +35,7 @@ export async function POST(req: NextRequest) {
       outgoing.append(key, value)
     }
 
-    const backendRes = await fetch(`${BACKEND}/tts`, {
+    const backendRes = await fetchWithRetry(`${BACKEND}/tts`, {
       method: 'POST',
       body: outgoing,
     })
