@@ -10,6 +10,9 @@ export async function GET() {
     const data = await res.json()
     return NextResponse.json(data, { status: res.status })
   } catch {
-    return NextResponse.json({ status: 'unreachable' }, { status: 502 })
+    return NextResponse.json(
+      { status: 'unreachable', hint: 'Start the backend: uv run pocket-tts serve --port 8000' },
+      { status: 502 }
+    )
   }
 }

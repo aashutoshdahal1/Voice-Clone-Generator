@@ -1,24 +1,34 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { checkHealth } from '@/lib/api'
+import { useEffect, useState, useCallback } from 'react'
 
-export function useBackendHealth() {
+export interface BackendHealth {
+  isHealthy: boolean | null
+  checking: boolean
+  recheck: () => void
+}
+
+export function useBackendHealth(): BackendHealth {
   const [isHealthy, setIsHealthy] = useState<boolean | null>(null)
   const [checking, setChecking] = useState(true)
 
-  const check = async () => {
+  const check = useCallback(async () => {
     setChecking(true)
-    const ok = await checkHealth()
-    setIsHealthy(ok)
-    setChecking(false)
-  }
+    try {
+      const res = await fetch('/proxy/health', { signal: AbortSignal.timeout(4000) })
+      setIsHealthy(res.ok)
+    } catch {
+      setIsHealthy(false)
+    } finally {
+      setChecking(false)
+    }
+  }, [])
 
   useEffect(() => {
     check()
-    const interval = setInterval(check, 30_000)
+    const interval = setInterval(check, 10_000)
     return () => clearInterval(interval)
-  }, [])
+  }, [check])
 
   return { isHealthy, checking, recheck: check }
 }

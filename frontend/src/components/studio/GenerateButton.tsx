@@ -1,12 +1,14 @@
 'use client'
 
-import { Zap, Square, Loader2 } from 'lucide-react'
+import { Zap, Square, Loader2, WifiOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
 interface GenerateButtonProps {
   isGenerating: boolean
   isDisabled: boolean
+  backendDown?: boolean
   onClick: () => void
   onStop: () => void
 }
@@ -14,6 +16,7 @@ interface GenerateButtonProps {
 export function GenerateButton({
   isGenerating,
   isDisabled,
+  backendDown = false,
   onClick,
   onStop,
 }: GenerateButtonProps) {
@@ -31,7 +34,7 @@ export function GenerateButton({
     )
   }
 
-  return (
+  const button = (
     <Button
       variant="gradient"
       size="lg"
@@ -42,8 +45,30 @@ export function GenerateButton({
         !isDisabled && 'animate-pulse-glow'
       )}
     >
-      <Zap className="w-5 h-5" />
+      {backendDown ? (
+        <WifiOff className="w-5 h-5" />
+      ) : (
+        <Zap className="w-5 h-5" />
+      )}
       Generate Speech
     </Button>
   )
+
+  if (backendDown) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="w-full">{button}</span>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-xs text-center">
+            Backend is not running. Start it with:<br />
+            <code className="text-xs">uv run pocket-tts serve --port 8000</code>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+
+  return button
 }

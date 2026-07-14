@@ -62,7 +62,13 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Proxy error'
-    return NextResponse.json({ error: message }, { status: 502 })
+    const msg = err instanceof Error ? err.message : 'Unknown error'
+    const isConnectionError =
+      err instanceof TypeError &&
+      (msg.includes('ECONNREFUSED') || msg.includes('fetch failed') || msg.includes('connect'))
+    const error = isConnectionError
+      ? 'Backend is not running. Start it with: uv run pocket-tts serve --port 8000'
+      : msg
+    return NextResponse.json({ error }, { status: 502 })
   }
 }

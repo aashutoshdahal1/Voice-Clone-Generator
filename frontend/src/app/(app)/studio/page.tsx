@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useStreamingAudio } from '@/hooks/useStreamingAudio'
 import { useVoiceLibraryStore, useHistoryStore, useSettingsStore } from '@/lib/store'
+import { useBackendHealth } from '@/hooks/useBackendHealth'
 import { generateTTS } from '@/lib/api'
 import { getVoiceById } from '@/lib/voices'
 import { Wand2, ChevronDown, ChevronUp } from 'lucide-react'
@@ -32,6 +33,7 @@ export default function StudioPage() {
   const { add: addToHistory } = useHistoryStore()
   const { settings } = useSettingsStore()
 
+  const { isHealthy } = useBackendHealth()
   const isGenerating = audioState.isStreaming
 
   const activeVoiceName = customVoiceFile
@@ -175,7 +177,8 @@ export default function StudioPage() {
 
           <GenerateButton
             isGenerating={isGenerating}
-            isDisabled={!text.trim()}
+            isDisabled={!text.trim() || isHealthy === false}
+            backendDown={isHealthy === false}
             onClick={handleGenerate}
             onStop={handleStop}
           />
